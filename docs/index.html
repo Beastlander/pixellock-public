@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PixelLock: screenshots and screen recording for Windows</title>
+    <meta name="description" content="PixelLock is a fast, quiet screenshot and screen recording app for Windows." />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>PixelLock</h1>
+      <p class="lead">Screenshots and screen recording for Windows. Fast, quiet, lives in the tray.</p>
+
+      <div class="actions">
+        <a class="button primary" id="download"
+          href="https://github.com/Beastlander/pixellock-public/releases/latest/download/PixelLock-Setup-x64.exe">
+          Download for Windows
+        </a>
+        <a class="button ghost" href="https://github.com/Beastlander/pixellock-public/releases">All versions</a>
+      </div>
+      <p class="meta" id="version">Windows 10 (1809) or later, 64-bit.</p>
+
+      <div class="card">
+        <strong>Microsoft Store:</strong> coming soon. The Store version installs without warnings
+        and updates itself.
+      </div>
+
+      <h2>Windows says "Windows protected your PC"?</h2>
+      <p>
+        The direct download is not code signed yet, so SmartScreen warns the first time. Click
+        <strong>More info</strong>, then <strong>Run anyway</strong>. You can check the file against
+        <code>SHA256SUMS.txt</code> on the release page. Updates after that are verified by the app
+        itself: it only installs versions signed with our update key.
+      </p>
+
+      <h2>Updates</h2>
+      <p>
+        The downloaded app tells you when a new version is out and installs it when you click
+        <strong>Install and restart</strong>. A new version ships every Thursday.
+      </p>
+
+      <h2>Feedback</h2>
+      <p>
+        Use <strong>Send feedback</strong> in the app, or
+        <a href="https://github.com/Beastlander/pixellock-public/issues/new/choose">open an issue</a>.
+      </p>
+
+      <footer>
+        <a href="privacy.html">Privacy</a> ·
+        <a href="https://github.com/Beastlander/pixellock-public">GitHub</a>
+      </footer>
+    </main>
+    <script>
+      // Show the newest version. The download link works without this.
+      fetch("https://api.github.com/repos/Beastlander/pixellock-public/releases/latest")
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then((release) => {
+          const date = new Date(release.published_at).toLocaleDateString("en", { dateStyle: "medium" });
+          document.getElementById("version").textContent =
+            `Version ${release.tag_name.replace(/^v/, "")}, released ${date}. Windows 10 (1809) or later, 64-bit.`;
+        })
+        .catch(() => undefined);
+    </script>
+  </body>
+</html>

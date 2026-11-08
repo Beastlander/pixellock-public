@@ -1,0 +1,21 @@
+# Keep the field ids details and diagnostics: the PixelLock app prefills them.
+# No kind field: the kind is the [Bug]/[Idea]/[Feedback] tag in the title, chosen in the app.
+name: Feedback from the app
+description: A bug, an idea or anything else about PixelLock.
+labels: ["feedback"]
+body:
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What happened and what you expected, or what would make PixelLock better. Paste a screenshot here if it helps.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: App and system
+      description: Filled in by the app only if you ticked "Include app version and system info".
+      render: text
+    validations:
+      required: false
