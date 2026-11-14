@@ -6,6 +6,10 @@ Downloads, bug reports and ideas for [PixelLock](https://beastlander.github.io/p
 
 **[Download PixelLock for Windows](https://github.com/Beastlander/pixellock-public/releases/latest/download/PixelLock-Setup-x64.exe)** or pick a version under [Releases](../../releases). The installer is not code signed yet, so Windows SmartScreen asks once: click **More info**, then **Run anyway**. The app updates itself after that. A Microsoft Store version is coming.
 
+## Command line and scripts
+
+PixelLock can take screenshots from PowerShell, scripts and AI tools: [guide with recipes](guide/command-line.md) ([på svenska](guide/kommandoraden.md)), for example a screenshot of every tab in a report with [capture-tabs.ps1](guide/recipes/capture-tabs.ps1).
+
 ## Feedback
 
 The easiest way to send feedback is from the app: **Send feedback** in the main window or in the tray menu. It opens a prefilled issue here; check it and press **Create**.
