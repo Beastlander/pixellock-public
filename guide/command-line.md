@@ -17,33 +17,33 @@ an AI tool such as Claude Code. This page shows what it can do, with recipes you
 Open PowerShell (Start menu, type *PowerShell*) and type:
 
 ```powershell
-pixellock capture | Out-String
+pixellock capture
 ```
 
 PixelLock takes a screenshot of all your screens, saves it where Settings > Saving says, and
 prints where the file went. Nothing opens on the screen.
 
-**Always end with `| Out-String`.** PixelLock is a Windows app, not a console program, so without
-it PowerShell neither waits for the screenshot nor shows the file's path. With it, PowerShell
-waits, and in a script `$LASTEXITCODE` tells you whether it worked (0 means saved).
+PowerShell waits until the screenshot is saved, and in a script `$LASTEXITCODE` tells you whether
+it worked (0 means saved). It works the same way in the Command Prompt, with `%ERRORLEVEL%`.
+(PixelLock 0.4.0 and older needed `| Out-String` at the end of the line for that.)
 
 A few more:
 
 ```powershell
 # Only the main screen, into a file you name
-pixellock capture --primary --out C:\Shots\start.png | Out-String
+pixellock capture --primary --out C:\Shots\start.png
 
 # One window on its own, even with other windows over it
-pixellock capture --window Excel | Out-String
+pixellock capture --window Excel
 
 # Wait 3 seconds first, for a menu or a tooltip to show
-pixellock capture --window Excel --delay 3 | Out-String
+pixellock capture --window Excel --delay 3
 
 # The window you are working in: you have 3 seconds to click it
-pixellock capture --active --delay 3 | Out-String
+pixellock capture --active --delay 3
 
 # Which windows are open, and what are they called?
-pixellock windows | Out-String
+pixellock windows
 ```
 
 `--window` takes any part of the window's title or app name, in any case: `Excel`,
@@ -56,7 +56,7 @@ script switch to it first (as the recipe below does with `AppActivate`).
 
 `pixellock` is found by name once PixelLock is installed, from the Microsoft Store or the
 download on this site. If PowerShell says it is not found, open a new PowerShell window, or use
-the full path, `$env:LOCALAPPDATA\PixelLock\pixellock.exe`.
+the full path, `$env:LOCALAPPDATA\PixelLock\pixellock-cli.exe`.
 
 ## Recipe: a screenshot of every tab in a report
 
@@ -109,7 +109,7 @@ Unblock-File .\capture-tabs.ps1
 $folder = "$HOME\Pictures\PixelLock\Report"
 $shell = New-Object -ComObject WScript.Shell
 for ($tab = 1; $tab -le 7; $tab++) {
-    pixellock capture --window "Sales report" --delay 2 --out "$folder\report-tab-$tab.png" | Out-String
+    pixellock capture --window "Sales report" --delay 2 --out "$folder\report-tab-$tab.png"
     [void] $shell.AppActivate("Sales report")
     $shell.SendKeys("^{PGDN}")
 }
@@ -121,7 +121,7 @@ for ($tab = 1; $tab -le 7; $tab++) {
 
 ```powershell
 while ($true) {
-    pixellock capture --window "Dashboard" --out "$HOME\Pictures\Dashboard" | Out-String
+    pixellock capture --window "Dashboard" --out "$HOME\Pictures\Dashboard"
     Start-Sleep -Seconds 600
 }
 ```
@@ -135,19 +135,19 @@ program*, program `pixellock`, arguments `capture --primary --out C:\Shots`.
 **The same area each time**, in physical pixels from the top-left corner of the main screen:
 
 ```powershell
-pixellock capture --region 0,0,1280,720 --out C:\Shots\area.png | Out-String
+pixellock capture --region 0,0,1280,720 --out C:\Shots\area.png
 ```
 
 **Straight to the clipboard** as well, to paste into a chat or a mail:
 
 ```powershell
-pixellock capture --window Excel --clipboard | Out-String
+pixellock capture --window Excel --clipboard
 ```
 
 **Use the path in the rest of a script**:
 
 ```powershell
-$path = (pixellock capture --primary | Out-String).Trim()
+$path = pixellock capture --primary
 if ($LASTEXITCODE -ne 0) { throw "No screenshot" }
 Copy-Item $path "\\server\share\reports\"
 ```
@@ -157,7 +157,7 @@ Copy-Item $path "\\server\share\reports\"
 ```powershell
 for ($n = 1; $true; $n++) {
     Read-Host "Press Enter for screenshot $n (Ctrl+C to stop)" | Out-Null
-    pixellock capture --primary --delay 1 --out "$HOME\Pictures\Steps\step-$n.png" | Out-String
+    pixellock capture --primary --delay 1 --out "$HOME\Pictures\Steps\step-$n.png"
 }
 ```
 
@@ -221,9 +221,9 @@ matched `--window`, or no window was active for `--active`), `2` something is wr
 
 | What you see                                          | What to do                                                                                                                         |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `pixellock` is not recognized                         | Open a new PowerShell window. Still not? Use `$env:LOCALAPPDATA\PixelLock\pixellock.exe`.                                           |
-| Nothing is printed and the script races ahead         | Add `\| Out-String` to the end of the `pixellock` line.                                                                            |
-| `No open window has "..." in its title or app name`   | Run `pixellock windows \| Out-String` and use a word from the title it shows. Restore the window if it is minimized.             |
+| `pixellock` is not recognized                         | Open a new PowerShell window. Still not? Use `$env:LOCALAPPDATA\PixelLock\pixellock-cli.exe`.                                       |
+| Nothing is printed and the script races ahead         | Update PixelLock. An older version needs `\| Out-String` at the end of the `pixellock` line.                                       |
+| `No open window has "..." in its title or app name`   | Run `pixellock windows` and use a word from the title it shows. Restore the window if it is minimized.             |
 | The wrong window was captured                         | Use more of the title, for example `"Sales report.xlsx"` instead of `Excel`.                                                       |
 | `--active` took PowerShell                            | Add `--delay 3` and click the app, or switch to it in the script before the `pixellock` line.                                    |
 | `No window is active`                                 | The desktop was active. Click the window, or switch to it in the script, before the screenshot.                                   |
