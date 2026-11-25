@@ -39,6 +39,9 @@ pixellock capture --window Excel | Out-String
 # Wait 3 seconds first, for a menu or a tooltip to show
 pixellock capture --window Excel --delay 3 | Out-String
 
+# The window you are working in: you have 3 seconds to click it
+pixellock capture --active --delay 3 | Out-String
+
 # Which windows are open, and what are they called?
 pixellock windows | Out-String
 ```
@@ -46,6 +49,10 @@ pixellock windows | Out-String
 `--window` takes any part of the window's title or app name, in any case: `Excel`,
 `"Sales report"`, `Edge`. If several windows match, the one in front is taken. A minimized window
 cannot be captured.
+
+`--active` needs no title: it takes the window that is active when the screenshot is taken. Typed
+in PowerShell that is PowerShell itself, so give yourself a `--delay` to click the app, or let a
+script switch to it first (as the recipe below does with `AppActivate`).
 
 `pixellock` is found by name once PixelLock is installed, from the Microsoft Store or the
 download on this site. If PowerShell says it is not found, open a new PowerShell window, or use
@@ -200,6 +207,7 @@ pixellock --help
 | `--monitor N`       | Screen N, counted from 1                                                                           |
 | `--region X,Y,W,H`  | A rectangle in physical pixels; X and Y may be negative for a screen left of or above the main one |
 | `--window TEXT`     | The front-most window with TEXT in its title or app name, on its own                               |
+| `--active`          | The window you are working in, on its own                                                          |
 | `--delay SECONDS`   | Wait first: 0 to 600 seconds, `2`, `0.5` and `0,5` all work                                        |
 | `--out PATH`        | A file ending in `.png` or `.jpg`, or a folder. Without it: where Settings > Saving says            |
 | `--clipboard`       | Also copy the screenshot                                                                           |
@@ -207,7 +215,7 @@ pixellock --help
 `pixellock windows` lists the open windows, front-most first: the app name, a tab and the title.
 
 Exit codes in `$LASTEXITCODE`: `0` saved, `1` the screenshot or the save failed (or no window
-matched `--window`), `2` something is wrong in the command.
+matched `--window`, or no window was active for `--active`), `2` something is wrong in the command.
 
 ## When something goes wrong
 
@@ -217,6 +225,8 @@ matched `--window`), `2` something is wrong in the command.
 | Nothing is printed and the script races ahead         | Add `\| Out-String` to the end of the `pixellock` line.                                                                            |
 | `No open window has "..." in its title or app name`   | Run `pixellock windows \| Out-String` and use a word from the title it shows. Restore the window if it is minimized.             |
 | The wrong window was captured                         | Use more of the title, for example `"Sales report.xlsx"` instead of `Excel`.                                                       |
+| `--active` took PowerShell                            | Add `--delay 3` and click the app, or switch to it in the script before the `pixellock` line.                                    |
+| `No window is active`                                 | The desktop was active. Click the window, or switch to it in the script, before the screenshot.                                   |
 | The screenshot shows the previous tab                 | Give the report more time: `-Wait 4` in the script, or a larger `--delay`.                                                          |
 | The key went to the wrong place                       | Use `-Manual`, or another `-NextKey` that your app uses for the next tab.                                                           |
 | Running scripts is disabled on this system            | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then `Unblock-File .\capture-tabs.ps1`.                                     |
