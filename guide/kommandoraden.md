@@ -40,6 +40,9 @@ pixellock capture --window Excel | Out-String
 # Vänta 3 sekunder först, så att en meny eller en knappbeskrivning hinner visas
 pixellock capture --window Excel --delay 3 | Out-String
 
+# Fönstret du arbetar i: du har 3 sekunder på dig att klicka på det
+pixellock capture --active --delay 3 | Out-String
+
 # Vilka fönster är öppna, och vad heter de?
 pixellock windows | Out-String
 ```
@@ -47,6 +50,10 @@ pixellock windows | Out-String
 `--window` tar valfri del av fönstrets titel eller programmets namn, stora eller små bokstäver:
 `Excel`, `"Försäljningsrapport"`, `Edge`. Passar flera fönster tas det som ligger främst. Ett
 minimerat fönster går inte att ta.
+
+`--active` behöver ingen titel: det tar fönstret som är aktivt när skärmbilden tas. Skrivet i
+PowerShell är det PowerShell självt, så ge dig ett `--delay` att klicka på programmet, eller låt
+ett skript byta till det först (som receptet nedan gör med `AppActivate`).
 
 `pixellock` hittas med bara namnet när PixelLock är installerat, från Microsoft Store eller
 nedladdningen på den här webbplatsen. Säger PowerShell att det inte finns: öppna ett nytt
@@ -201,6 +208,7 @@ pixellock --help
 | `--monitor N`       | Skärm N, räknat från 1                                                                                       |
 | `--region X,Y,W,H`  | En rektangel i fysiska pixlar; X och Y kan vara negativa för en skärm till vänster om eller ovanför huvudskärmen |
 | `--window TEXT`     | Det främsta fönstret med TEXT i titeln eller programnamnet, för sig                                          |
+| `--active`          | Fönstret du arbetar i, för sig                                                                               |
 | `--delay SEKUNDER`  | Vänta först: 0 till 600 sekunder, `2`, `0.5` och `0,5` fungerar                                               |
 | `--out SÖKVÄG`      | En fil som slutar på `.png` eller `.jpg`, eller en mapp. Utan: där Inställningar > Spara säger               |
 | `--clipboard`       | Kopiera skärmbilden också                                                                                    |
@@ -209,7 +217,7 @@ pixellock --help
 titeln.
 
 Slutkoder i `$LASTEXITCODE`: `0` sparad, `1` skärmbilden eller sparandet misslyckades (eller
-inget fönster passade `--window`), `2` något är fel i kommandot.
+inget fönster passade `--window`, eller inget fönster var aktivt för `--active`), `2` något är fel i kommandot.
 
 ## Om något går fel
 
@@ -219,6 +227,8 @@ inget fönster passade `--window`), `2` något är fel i kommandot.
 | Inget skrivs ut och skriptet rusar i väg               | Lägg till `\| Out-String` sist på raden med `pixellock`.                                                                   |
 | `No open window has "..." in its title or app name`    | Kör `pixellock windows \| Out-String` och använd ett ord ur titeln som visas. Återställ fönstret om det är minimerat.       |
 | Fel fönster kom med                                    | Använd mer av titeln, till exempel `"Försäljningsrapport.xlsx"` i stället för `Excel`.                                       |
+| `--active` tog PowerShell                              | Lägg till `--delay 3` och klicka på programmet, eller byt till det i skriptet före raden med `pixellock`.                   |
+| `No window is active`                                  | Skrivbordet var aktivt. Klicka på fönstret, eller byt till det i skriptet, före skärmbilden.                                 |
 | Skärmbilden visar förra fliken                         | Ge rapporten mer tid: `-Wait 4` i skriptet, eller ett större `--delay`.                                                     |
 | Tangenten hamnade fel                                  | Använd `-Manual`, eller en annan `-NextKey` som ditt program använder för nästa flik.                                        |
 | Skript är avstängda i det här systemet                 | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, sedan `Unblock-File .\capture-tabs.ps1`.                              |
