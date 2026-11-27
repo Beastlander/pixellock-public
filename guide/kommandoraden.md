@@ -25,7 +25,7 @@ skriver ut var filen hamnade. Inget öppnas på skärmen.
 
 PowerShell väntar tills skärmbilden är sparad, och i ett skript säger `$LASTEXITCODE` om det gick
 bra (0 betyder sparad). Det fungerar likadant i Kommandotolken, med `%ERRORLEVEL%`. (PixelLock
-0.4.0 och äldre behövde `| Out-String` sist på raden för det.)
+0.5.0 och äldre behövde `| Out-String` sist på raden för det.)
 
 Några till:
 

@@ -96,7 +96,7 @@ function Show-Report {
 }
 
 # Captures the report window alone into $File after waiting $Wait seconds. PowerShell waits for
-# PixelLock and sets $LASTEXITCODE; the pipe to Out-String does that for PixelLock 0.4.0 and
+# PixelLock and sets $LASTEXITCODE; the pipe to Out-String does that for PixelLock 0.5.0 and
 # older too, and does no harm with a newer one.
 function Save-Tab([string] $File) {
     $delay = $Wait.ToString([Globalization.CultureInfo]::InvariantCulture)

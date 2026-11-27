@@ -25,7 +25,7 @@ prints where the file went. Nothing opens on the screen.
 
 PowerShell waits until the screenshot is saved, and in a script `$LASTEXITCODE` tells you whether
 it worked (0 means saved). It works the same way in the Command Prompt, with `%ERRORLEVEL%`.
-(PixelLock 0.4.0 and older needed `| Out-String` at the end of the line for that.)
+(PixelLock 0.5.0 and older needed `| Out-String` at the end of the line for that.)
 
 A few more:
 
