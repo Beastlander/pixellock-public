@@ -42,6 +42,9 @@ pixellock capture --window Excel --delay 3
 # Fönstret du arbetar i: du har 3 sekunder på dig att klicka på det
 pixellock capture --active --delay 3
 
+# Fönstret du arbetar i: du har 3 sekunder på dig att klicka på det
+pixellock capture --active --delay 3 | Out-String
+
 # Vilka fönster är öppna, och vad heter de?
 pixellock windows
 ```
