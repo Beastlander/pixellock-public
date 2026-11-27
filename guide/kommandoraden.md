@@ -17,34 +17,36 @@ aktivitet eller ett AI-verktyg som Claude Code. Här står vad det kan, med rece
 Öppna PowerShell (Start-menyn, skriv *PowerShell*) och skriv:
 
 ```powershell
-pixellock capture | Out-String
+pixellock capture
 ```
 
 PixelLock tar en skärmbild av alla dina skärmar, sparar den där Inställningar > Spara säger och
 skriver ut var filen hamnade. Inget öppnas på skärmen.
 
-**Avsluta alltid med `| Out-String`.** PixelLock är ett Windows-program, inte ett
-konsolprogram, så utan det väntar PowerShell inte på skärmbilden och visar inte filens sökväg.
-Med det väntar PowerShell, och i ett skript säger `$LASTEXITCODE` om det gick bra (0 betyder
-sparad).
+PowerShell väntar tills skärmbilden är sparad, och i ett skript säger `$LASTEXITCODE` om det gick
+bra (0 betyder sparad). Det fungerar likadant i Kommandotolken, med `%ERRORLEVEL%`. (PixelLock
+0.5.0 och äldre behövde `| Out-String` sist på raden för det.)
 
 Några till:
 
 ```powershell
 # Bara huvudskärmen, till en fil du namnger
-pixellock capture --primary --out C:\Bilder\start.png | Out-String
+pixellock capture --primary --out C:\Bilder\start.png
 
 # Ett fönster för sig, även med andra fönster över det
-pixellock capture --window Excel | Out-String
+pixellock capture --window Excel
 
 # Vänta 3 sekunder först, så att en meny eller en knappbeskrivning hinner visas
-pixellock capture --window Excel --delay 3 | Out-String
+pixellock capture --window Excel --delay 3
+
+# Fönstret du arbetar i: du har 3 sekunder på dig att klicka på det
+pixellock capture --active --delay 3
 
 # Fönstret du arbetar i: du har 3 sekunder på dig att klicka på det
 pixellock capture --active --delay 3 | Out-String
 
 # Vilka fönster är öppna, och vad heter de?
-pixellock windows | Out-String
+pixellock windows
 ```
 
 `--window` tar valfri del av fönstrets titel eller programmets namn, stora eller små bokstäver:
@@ -57,7 +59,7 @@ ett skript byta till det först (som receptet nedan gör med `AppActivate`).
 
 `pixellock` hittas med bara namnet när PixelLock är installerat, från Microsoft Store eller
 nedladdningen på den här webbplatsen. Säger PowerShell att det inte finns: öppna ett nytt
-PowerShell-fönster, eller använd hela sökvägen, `$env:LOCALAPPDATA\PixelLock\pixellock.exe`.
+PowerShell-fönster, eller använd hela sökvägen, `$env:LOCALAPPDATA\PixelLock\pixellock-cli.exe`.
 
 ## Recept: en skärmbild av varje flik i en rapport
 
@@ -109,7 +111,7 @@ Unblock-File .\capture-tabs.ps1
 $folder = "$HOME\Pictures\PixelLock\Report"
 $shell = New-Object -ComObject WScript.Shell
 for ($tab = 1; $tab -le 7; $tab++) {
-    pixellock capture --window "Försäljningsrapport" --delay 2 --out "$folder\report-tab-$tab.png" | Out-String
+    pixellock capture --window "Försäljningsrapport" --delay 2 --out "$folder\report-tab-$tab.png"
     [void] $shell.AppActivate("Försäljningsrapport")
     $shell.SendKeys("^{PGDN}")
 }
@@ -121,7 +123,7 @@ for ($tab = 1; $tab -le 7; $tab++) {
 
 ```powershell
 while ($true) {
-    pixellock capture --window "Dashboard" --out "$HOME\Pictures\Dashboard" | Out-String
+    pixellock capture --window "Dashboard" --out "$HOME\Pictures\Dashboard"
     Start-Sleep -Seconds 600
 }
 ```
@@ -135,19 +137,19 @@ Spara, så att de inte skriver över varandra.
 **Samma område varje gång**, i fysiska pixlar från huvudskärmens övre vänstra hörn:
 
 ```powershell
-pixellock capture --region 0,0,1280,720 --out C:\Bilder\omrade.png | Out-String
+pixellock capture --region 0,0,1280,720 --out C:\Bilder\omrade.png
 ```
 
 **Direkt till urklipp** också, för att klistra in i en chatt eller ett mejl:
 
 ```powershell
-pixellock capture --window Excel --clipboard | Out-String
+pixellock capture --window Excel --clipboard
 ```
 
 **Använd sökvägen i resten av ett skript**:
 
 ```powershell
-$path = (pixellock capture --primary | Out-String).Trim()
+$path = pixellock capture --primary
 if ($LASTEXITCODE -ne 0) { throw "Ingen skärmbild" }
 Copy-Item $path "\\server\delad\rapporter\"
 ```
@@ -157,7 +159,7 @@ Copy-Item $path "\\server\delad\rapporter\"
 ```powershell
 for ($n = 1; $true; $n++) {
     Read-Host "Tryck Enter för skärmbild $n (Ctrl+C avslutar)" | Out-Null
-    pixellock capture --primary --delay 1 --out "$HOME\Pictures\Steg\steg-$n.png" | Out-String
+    pixellock capture --primary --delay 1 --out "$HOME\Pictures\Steg\steg-$n.png"
 }
 ```
 
@@ -223,9 +225,9 @@ inget fönster passade `--window`, eller inget fönster var aktivt för `--activ
 
 | Det du ser                                             | Gör så här                                                                                                                  |
 | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `pixellock` känns inte igen                            | Öppna ett nytt PowerShell-fönster. Fortfarande inte? Använd `$env:LOCALAPPDATA\PixelLock\pixellock.exe`.                    |
-| Inget skrivs ut och skriptet rusar i väg               | Lägg till `\| Out-String` sist på raden med `pixellock`.                                                                   |
-| `No open window has "..." in its title or app name`    | Kör `pixellock windows \| Out-String` och använd ett ord ur titeln som visas. Återställ fönstret om det är minimerat.       |
+| `pixellock` känns inte igen                            | Öppna ett nytt PowerShell-fönster. Fortfarande inte? Använd `$env:LOCALAPPDATA\PixelLock\pixellock-cli.exe`.                |
+| Inget skrivs ut och skriptet rusar i väg               | Uppdatera PixelLock. En äldre version behöver `\| Out-String` sist på raden med `pixellock`.                               |
+| `No open window has "..." in its title or app name`    | Kör `pixellock windows` och använd ett ord ur titeln som visas. Återställ fönstret om det är minimerat.       |
 | Fel fönster kom med                                    | Använd mer av titeln, till exempel `"Försäljningsrapport.xlsx"` i stället för `Excel`.                                       |
 | `--active` tog PowerShell                              | Lägg till `--delay 3` och klicka på programmet, eller byt till det i skriptet före raden med `pixellock`.                   |
 | `No window is active`                                  | Skrivbordet var aktivt. Klicka på fönstret, eller byt till det i skriptet, före skärmbilden.                                 |

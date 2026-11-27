@@ -19,7 +19,7 @@
 
 .PARAMETER Window
     Text in the report window's title, for example "Sales report" or "Excel". Not case
-    sensitive. Run `pixellock windows | Out-String` to see the titles of the open windows.
+    sensitive. Run `pixellock windows` to see the titles of the open windows.
 
 .PARAMETER Tabs
     How many tabs to capture. 7 if you leave it out.
@@ -88,15 +88,16 @@ function Show-Report {
         Where-Object { $_.MainWindowTitle.IndexOf($Window, [StringComparison]::OrdinalIgnoreCase) -ge 0 } |
         Select-Object -First 1
     if (-not $process) {
-        throw "No window has '$Window' in its title. Run 'pixellock windows | Out-String' to see the open windows."
+        throw "No window has '$Window' in its title. Run 'pixellock windows' to see the open windows."
     }
     $shell = New-Object -ComObject WScript.Shell
     [void] $shell.AppActivate($process.Id)
     Start-Sleep -Milliseconds 300
 }
 
-# Captures the report window alone into $File after waiting $Wait seconds. Piping to Out-String
-# makes PowerShell wait for PixelLock and set $LASTEXITCODE.
+# Captures the report window alone into $File after waiting $Wait seconds. PowerShell waits for
+# PixelLock and sets $LASTEXITCODE; the pipe to Out-String does that for PixelLock 0.5.0 and
+# older too, and does no harm with a newer one.
 function Save-Tab([string] $File) {
     $delay = $Wait.ToString([Globalization.CultureInfo]::InvariantCulture)
     $saved = pixellock capture --window $Window --delay $delay --out $File | Out-String
