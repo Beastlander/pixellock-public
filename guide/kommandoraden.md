@@ -115,6 +115,20 @@ for ($tab = 1; $tab -le 7; $tab++) {
 }
 ```
 
+**Gör sedan en steg-för-steg-guide av dem.** `pixellock guide` gör om skärmbilderna till en
+instruktion med ett numrerat steg per bild och filnamnet som text, sparad som Markdown, PDF och
+Word:
+
+```powershell
+pixellock guide "$HOME\Pictures\PixelLock\Report" --title "Försäljningsrapport" | Out-String
+```
+
+En mapp ger sina bilder i namnordning, där siffror räknas som tal, så `report-tab-10` kommer efter
+`report-tab-9`. Du kan också ange filerna en och en, i den ordning du vill. Guiden hamnar i
+`Pictures\PixelLock\Guides\Försäljningsrapport` (`--out MAPP` lägger den någon annanstans), och
+kommandot skriver ut den mappen. Döp filerna efter vad de visar (`1 Öppna rapporten.png`), så går
+guiden att läsa som den är.
+
 ## Fler recept
 
 **En skärmbild var tionde minut** (till exempel av en översiktspanel), tills du trycker Ctrl+C:
@@ -197,6 +211,7 @@ MCP-servern kan bara läsa. Den kan inte ta nya skärmbilder; till det använder
 ```text
 pixellock capture [VAD] [--delay SEKUNDER] [--out SÖKVÄG] [--clipboard]
 pixellock windows
+pixellock guide FIL|MAPP... [--title TEXT] [--out MAPP]
 pixellock mcp
 pixellock --help
 ```
@@ -215,6 +230,11 @@ pixellock --help
 
 `pixellock windows` listar de öppna fönstren, det främsta först: programnamnet, en tabb och
 titeln.
+
+`pixellock guide` gör en steg-för-steg-guide av skärmbilder: ett steg per bild, i den ordning du
+anger, med filnamnet som text. `--title TEXT` ger guiden ett namn, `--out MAPP` är var dess mapp
+hamnar (utan: `Guides` i skärmbildsmappen). Saknas en bild eller är den trasig säger kommandot
+vilken, och ingen guide görs.
 
 Slutkoder i `$LASTEXITCODE`: `0` sparad, `1` skärmbilden eller sparandet misslyckades (eller
 inget fönster passade `--window`, eller inget fönster var aktivt för `--active`), `2` något är fel i kommandot.

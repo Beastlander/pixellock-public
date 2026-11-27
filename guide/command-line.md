@@ -115,6 +115,19 @@ for ($tab = 1; $tab -le 7; $tab++) {
 }
 ```
 
+**Then make a step guide of them.** `pixellock guide` turns the screenshots into a how-to with
+one numbered step per picture and the file name as its text, saved as Markdown, PDF and Word:
+
+```powershell
+pixellock guide "$HOME\Pictures\PixelLock\Report" --title "Sales report" | Out-String
+```
+
+A folder gives its pictures in name order, with numbers counted as numbers, so `report-tab-10`
+comes after `report-tab-9`. You can also name the files one by one, in the order you want. The
+guide goes into `Pictures\PixelLock\Guides\Sales report` (`--out FOLDER` puts it somewhere else),
+and the command prints that folder. Name the files for what they show (`1 Open the report.png`),
+and the guide reads well as it is.
+
 ## More recipes
 
 **A screenshot every 10 minutes** (for example of a dashboard), until you press Ctrl+C:
@@ -196,6 +209,7 @@ The MCP server can only read. It cannot take new screenshots; for that, Claude C
 ```text
 pixellock capture [WHAT] [--delay SECONDS] [--out PATH] [--clipboard]
 pixellock windows
+pixellock guide FILE|FOLDER... [--title TEXT] [--out FOLDER]
 pixellock mcp
 pixellock --help
 ```
@@ -213,6 +227,11 @@ pixellock --help
 | `--clipboard`       | Also copy the screenshot                                                                           |
 
 `pixellock windows` lists the open windows, front-most first: the app name, a tab and the title.
+
+`pixellock guide` makes a step guide from screenshots: one step per picture, in the order given,
+with the file name as text. `--title TEXT` names the guide, `--out FOLDER` is where its folder
+goes (without it: `Guides` in the screenshots folder). If a picture is missing or broken, it says
+which one and makes no guide.
 
 Exit codes in `$LASTEXITCODE`: `0` saved, `1` the screenshot or the save failed (or no window
 matched `--window`, or no window was active for `--active`), `2` something is wrong in the command.
